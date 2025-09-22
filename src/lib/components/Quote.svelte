@@ -50,13 +50,10 @@
 	}
 
 	blockquote {
-		margin: 0;
-	}
-
-	blockquote > p {
 		font-size: 1.4rem;
-		margin-left: 10px;
-		padding-top: 10px;
+		padding-left: 10px;
+
+		margin: 0;
 		color: #251e3e;
 		font-family: 'Tenor Sans', sans-serif;
 	}
