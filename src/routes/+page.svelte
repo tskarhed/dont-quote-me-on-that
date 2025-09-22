@@ -39,24 +39,36 @@
 		loadQuotes();
 	}
 
-	loadQuotes();
+	$effect(() => {
+		if ($user) {
+			loadQuotes();
+		} else {
+			quotes = [];
+			displayAddForm = false;
+		}
+	});
 </script>
 
-<h1>Quotes</h1>
+<h2>Citat</h2>
 {#if $user}
 	<button onclick={() => (displayAddForm = !displayAddForm)}>
-		{displayAddForm ? 'Cancel' : 'Add a Quote'}
+		{displayAddForm ? 'Avbryt' : 'Lägg till citat'}
 	</button>
 	{#if displayAddForm}
-		<input bind:value={text} placeholder="What was said" />
-		<input bind:value={author} placeholder="Who said it" />
-		<button onclick={addQuote}>Add</button>
+		<input bind:value={text} placeholder="Vad sades" />
+		<input bind:value={author} placeholder="Vem sade det" />
+		<button onclick={addQuote}>Lägg till</button>
 	{/if}
 {:else}
-	<p>You must be logged in to add quotes.</p>
+	<p>Du måste vara inloggad för att lägga till citat.</p>
+	<a href="/login">Logga in</a>
 {/if}
 <ul>
-	{#each quotes as q}
-		<li>#{q.number} — "{q.text}" (by {q.author})</li>
-	{/each}
+	{#if $user}
+		{#each quotes as q}
+			<li>#{q.number} — "{q.text}" (by {q.author})</li>
+		{/each}
+	{:else}
+		<p>Please log in to view quotes.</p>
+	{/if}
 </ul>

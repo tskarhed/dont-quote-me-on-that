@@ -1,5 +1,6 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
+	import { PUBLIC_SITE_TITLE } from '$env/static/public';
 
 	import { supabase } from '$lib/supabaseClient';
 	import { onMount } from 'svelte';
@@ -23,6 +24,12 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
-<h1>Citatbok</h1>
+<h1>{PUBLIC_SITE_TITLE}</h1>
 
 {@render children?.()}
+
+<footer>
+	{#if $user}
+		<button onclick={() => supabase.auth.signOut()}>Logga ut</button>
+	{/if}
+</footer>
