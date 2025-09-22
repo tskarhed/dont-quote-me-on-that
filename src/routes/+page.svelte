@@ -2,15 +2,8 @@
 	import { supabase } from '$lib/supabaseClient';
 	import { user } from '$lib/stores';
 	import { get } from 'svelte/store';
-
-	type Quote = {
-		id: number;
-		number: number;
-		text: string;
-		author: string;
-		created_at: string;
-		created_by: string;
-	};
+	import type { Quote } from '$lib/types';
+	import QuoteComponent from '$lib/components/Quote.svelte';
 
 	let quotes = $state<Quote[]>([]);
 	let text = $state<string>('');
@@ -63,12 +56,22 @@
 	<p>Du måste vara inloggad för att lägga till citat.</p>
 	<a href="/login">Logga in</a>
 {/if}
-<ul>
+<section>
 	{#if $user}
 		{#each quotes as q}
-			<li>#{q.number} — "{q.text}" (by {q.author})</li>
+			<QuoteComponent whoSaidIt={q.author} date={q.created_at} text={q.text} number={q.number} />
 		{/each}
 	{:else}
-		<p>Please log in to view quotes.</p>
+		<p>Du måste vara inloggad för att se citat.</p>
 	{/if}
-</ul>
+</section>
+
+<style>
+	section {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-top: 2rem;
+		margin-bottom: 2rem;
+	}
+</style>

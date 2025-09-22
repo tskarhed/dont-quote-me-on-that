@@ -29,8 +29,9 @@
 </script>
 
 <h2>Logga in</h2>
-<input bind:value={email} placeholder="Email" />
-<input type="password" bind:value={password} placeholder="Lösenord" />
-<button on:click={login}>Logga in</button>
-<button on:click={signup}>Skapa konto</button>
+<form onsubmit={login} id="login-form">
+	<input bind:value={email} placeholder="Email" />
+	<input type="password" bind:value={password} placeholder="Lösenord" />
+	<button type="submit">Logga in</button>
+</form>
 <p>{error}</p>
