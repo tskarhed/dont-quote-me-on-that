@@ -15,9 +15,13 @@
 	let quotes = $state<Quote[]>([]);
 	let text = $state<string>('');
 	let author = $state<string>('');
+	let displayAddForm = $state<boolean>(false);
 
 	async function loadQuotes() {
-		const { data } = await supabase.from('quotes').select('*').order('number', { ascending: true });
+		const { data } = await supabase
+			.from('quotes')
+			.select('*')
+			.order('number', { ascending: false });
 		quotes = data ?? [];
 	}
 
@@ -39,18 +43,20 @@
 </script>
 
 <h1>Quotes</h1>
-
+{#if $user}
+	<button onclick={() => (displayAddForm = !displayAddForm)}>
+		{displayAddForm ? 'Cancel' : 'Add a Quote'}
+	</button>
+	{#if displayAddForm}
+		<input bind:value={text} placeholder="What was said" />
+		<input bind:value={author} placeholder="Who said it" />
+		<button onclick={addQuote}>Add</button>
+	{/if}
+{:else}
+	<p>You must be logged in to add quotes.</p>
+{/if}
 <ul>
 	{#each quotes as q}
 		<li>#{q.number} — "{q.text}" (by {q.author})</li>
 	{/each}
 </ul>
-
-{#if $user}
-	<h2>Add a Quote</h2>
-	<input bind:value={text} placeholder="What was said" />
-	<input bind:value={author} placeholder="Who said it" />
-	<button onclick={addQuote}>Add</button>
-{:else}
-	<p>You must be logged in to add quotes.</p>
-{/if}

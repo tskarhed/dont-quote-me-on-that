@@ -23,5 +23,6 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
+<h1>Citatbok</h1>
 
 {@render children?.()}

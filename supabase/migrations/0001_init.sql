@@ -39,10 +39,10 @@ create table if not exists quotes (
 
 alter table quotes enable row level security;
 
--- Policy: anyone can read quotes
-create policy "anyone can read quotes"
+-- Policy: only authenticated users can read quotes
+create policy "authenticated users can read quotes"
 on quotes for select
-using (true);
+using (auth.uid() is not null);
 
 -- Policy: logged-in users can add quotes
 create policy "logged-in users can add quotes"
@@ -92,10 +92,10 @@ using (email = auth.email());
 create or replace function handle_new_user()
 returns trigger as $$
 begin
-  insert into profiles (id, role) values (new.id, 'user');
+  insert into public.profiles (id, role) values (new.id, 'user');
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = '';
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
