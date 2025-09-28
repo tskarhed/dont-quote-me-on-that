@@ -202,7 +202,8 @@
 	}
 
 	button {
-		width: 100%;
+		align-self: center;
+		max-width: fit-content;
 	}
 
 	.error-details {
