@@ -22,6 +22,9 @@
 
 <style>
 	div {
+		display: flex;
+		flex-direction: column;
+
 		border-color: grey;
 		box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.28);
 		border-radius: 5px;
@@ -79,5 +82,7 @@
 		margin: 0;
 		word-wrap: break-word;
 		overflow-wrap: break-word;
+
+		margin-top: auto;
 	}
 </style>
