@@ -17,17 +17,17 @@
 
 	async function loadQuotes() {
 		if (!isAllowlisted && userRole !== 'admin') return;
-		
+
 		const { data, error } = await supabase
 			.from('quotes')
 			.select('*')
 			.order('number', { ascending: false });
-		
+
 		if (error) {
 			allowlistError = error.message;
 			return;
 		}
-		
+
 		quotes = data ?? [];
 	}
 
@@ -92,12 +92,12 @@
 			author,
 			created_by: u.id
 		});
-		
+
 		if (error) {
 			allowlistError = error.message;
 			return;
 		}
-		
+
 		text = '';
 		author = '';
 		loadQuotes();
@@ -129,12 +129,6 @@
 </script>
 
 {#if $user}
-	{#if userRole === 'admin'}
-		<div class="admin-notice">
-			<p>Welcome, admin! <a href="/admin">Go to Admin Panel</a></p>
-		</div>
-	{/if}
-
 	{#if isLoading}
 		<div class="loading">
 			<p>Checking access permissions...</p>
@@ -156,11 +150,11 @@
 		{/if}
 	{:else}
 		<div class="access-denied">
-			<h2>Access Restricted</h2>
-			<p>Your email ({$user.email}) is not on the allowlist.</p>
-			<p>Please contact an administrator to request access.</p>
+			<h2>Tillgång begränsad</h2>
+			<p>Din e-post ({$user.email}) har inte rättighet att se citat.</p>
+			<p>Kontakta en administratör för att begära tillgång.</p>
 			{#if allowlistError}
-				<p class="error-details">Error: {allowlistError}</p>
+				<p class="error-details">Fel: {allowlistError}</p>
 			{/if}
 		</div>
 	{/if}
@@ -174,15 +168,6 @@
 		{#each quotes as q}
 			<QuoteComponent whoSaidIt={q.author} date={q.created_at} text={q.text} number={q.number} />
 		{/each}
-	{:else if $user && !isAllowlisted && userRole !== 'admin' && !isLoading}
-		<div class="access-denied">
-			<h3>Cannot View Quotes</h3>
-			<p>You must be on the allowlist to view quotes.</p>
-			<p>Your email ({$user.email}) is not currently authorized.</p>
-			{#if allowlistError}
-				<p class="error-details">Error: {allowlistError}</p>
-			{/if}
-		</div>
 	{:else if $user && isLoading}
 		<div class="loading">
 			<p>Loading quotes...</p>
@@ -208,54 +193,16 @@
 	#quotes {
 		display: grid;
 		gap: 0.5rem;
-		grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		width: 100%;
+		max-width: none;
 	}
-
 	form input {
 		grid-column: span 2;
 	}
-	
+
 	button {
 		width: 100%;
-	}
-
-	.admin-notice {
-		background-color: #e3f2fd;
-		border: 1px solid #2196f3;
-		border-radius: 8px;
-		padding: 1rem;
-		margin: 1rem 0;
-		text-align: center;
-	}
-
-	.admin-notice a {
-		color: #1976d2;
-		text-decoration: none;
-		font-weight: 500;
-	}
-
-	.admin-notice a:hover {
-		text-decoration: underline;
-	}
-
-	.access-denied {
-		background-color: #ffebee;
-		border: 1px solid #f44336;
-		border-radius: 8px;
-		padding: 1rem;
-		margin: 1rem 0;
-		text-align: center;
-	}
-
-	.access-denied h2,
-	.access-denied h3 {
-		color: #d32f2f;
-		margin-top: 0;
-	}
-
-	.access-denied p {
-		color: #666;
-		margin: 0.5rem 0;
 	}
 
 	.error-details {

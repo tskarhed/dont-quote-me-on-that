@@ -35,6 +35,9 @@
 
 		font-size: 1.4em;
 		padding: 10px;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		hyphens: auto;
 	}
 
 	a {
@@ -52,10 +55,20 @@
 	blockquote {
 		font-size: 1.4rem;
 		padding-left: 10px;
-
 		margin: 0;
 		color: #251e3e;
 		font-family: 'Tenor Sans', sans-serif;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		hyphens: auto;
+	}
+
+	blockquote p {
+		margin: 0;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		hyphens: auto;
+		line-height: 1.4;
 	}
 
 	.quote-footer {
@@ -63,7 +76,8 @@
 		font-size: 1.2rem;
 		font-family: 'Cormorant Garamond', serif;
 		font-style: italic;
-
 		margin: 0;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
 	}
 </style>
