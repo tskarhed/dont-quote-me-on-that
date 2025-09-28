@@ -4,6 +4,7 @@
 	import { get } from 'svelte/store';
 	import type { Quote } from '$lib/types';
 	import QuoteComponent from '$lib/components/Quote.svelte';
+	import { slide } from 'svelte/transition';
 
 	let quotes = $state<Quote[]>([]);
 	let text = $state<string>('');
@@ -32,6 +33,11 @@
 		loadQuotes();
 	}
 
+	function handleSubmit(event: Event) {
+		event.preventDefault();
+		addQuote();
+	}
+
 	$effect(() => {
 		if ($user) {
 			loadQuotes();
@@ -44,18 +50,21 @@
 
 <h2>Citat</h2>
 {#if $user}
-	<button onclick={() => (displayAddForm = !displayAddForm)}>
-		{displayAddForm ? 'Avbryt' : 'Lägg till citat'}
-	</button>
 	{#if displayAddForm}
-		<input bind:value={text} placeholder="Vad sades" />
-		<input bind:value={author} placeholder="Vem sade det" />
-		<button onclick={addQuote}>Lägg till</button>
+		<form onsubmit={handleSubmit} transition:slide={{ duration: 300 }}>
+			<input bind:value={text} placeholder="Vad sades" required />
+			<input bind:value={author} placeholder="Vem sade det" required />
+			<button type="submit">Lägg till</button>
+			<button type="button" onclick={() => (displayAddForm = false)}>Avbryt</button>
+		</form>
+	{:else}
+		<button onclick={() => (displayAddForm = !displayAddForm)}> Lägg till citat </button>
 	{/if}
 {:else}
 	<p>Du måste vara inloggad för att lägga till citat.</p>
 	<a href="/login">Logga in</a>
 {/if}
+
 <section>
 	{#if $user}
 		{#each quotes as q}
