@@ -1,5 +1,5 @@
 -- ==============================
--- Invite-only Quotes App Schema
+-- Allowlist-only Quotes App Schema
 -- ==============================
 
 -- Enable UUID extension if not already enabled
@@ -26,6 +26,33 @@ on profiles for update
 using (id = auth.uid());
 
 -- ------------------------------
+-- Allowlist
+-- ------------------------------
+create table if not exists allowlist (
+  id uuid primary key default uuid_generate_v4(),
+  email text not null unique,
+  created_by uuid references auth.users,
+  created_at timestamptz default now()
+);
+
+alter table allowlist enable row level security;
+
+-- Policy: only admins can manage allowlist
+create policy "admins can manage allowlist"
+on allowlist for all
+using (
+  exists (
+    select 1 from profiles p
+    where p.id = auth.uid() and p.role = 'admin'
+  )
+);
+
+-- Policy: users can check if their email is in allowlist
+create policy "users can check allowlist"
+on allowlist for select
+using (email = auth.email());
+
+-- ------------------------------
 -- Quotes
 -- ------------------------------
 create table if not exists quotes (
@@ -39,15 +66,37 @@ create table if not exists quotes (
 
 alter table quotes enable row level security;
 
--- Policy: only authenticated users can read quotes
-create policy "authenticated users can read quotes"
+-- Policy: admins and allowlisted users can read quotes
+create policy "admins and allowlisted users can read quotes"
 on quotes for select
-using (auth.uid() is not null);
+using (
+  auth.uid() is not null and (
+    exists (
+      select 1 from profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    ) or
+    exists (
+      select 1 from allowlist a
+      where a.email = auth.email()
+    )
+  )
+);
 
--- Policy: logged-in users can add quotes
-create policy "logged-in users can add quotes"
+-- Policy: admins and allowlisted users can add quotes
+create policy "admins and allowlisted users can add quotes"
 on quotes for insert
-with check (auth.uid() = created_by);
+with check (
+  auth.uid() = created_by and (
+    exists (
+      select 1 from profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    ) or
+    exists (
+      select 1 from allowlist a
+      where a.email = auth.email()
+    )
+  )
+);
 
 -- Policy: only admins can delete quotes
 create policy "only admins can delete quotes"
@@ -58,33 +107,6 @@ using (
     where p.id = auth.uid() and p.role = 'admin'
   )
 );
-
--- ------------------------------
--- Invites
--- ------------------------------
-create table if not exists invites (
-  id uuid primary key default uuid_generate_v4(),
-  email text not null unique,
-  used boolean default false,
-  created_by uuid references auth.users
-);
-
-alter table invites enable row level security;
-
--- Policy: only admins can insert invites
-create policy "admins can create invites"
-on invites for insert
-WITH CHECK (    
-  exists (
-    select 1 from profiles p
-    where p.id = auth.uid() and p.role = 'admin'
-  )
-);
-
--- Policy: users can read their own invite (optional)
-create policy "users can read their own invite"
-on invites for select
-using (email = auth.email());
 
 -- ------------------------------
 -- Auto-insert profile on signup
