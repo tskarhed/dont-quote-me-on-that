@@ -48,15 +48,18 @@
 	});
 </script>
 
-<h2>Citat</h2>
 {#if $user}
 	{#if displayAddForm}
-		<form onsubmit={handleSubmit} transition:slide={{ duration: 300 }}>
-			<input bind:value={text} placeholder="Vad sades" required />
-			<input bind:value={author} placeholder="Vem sade det" required />
-			<button type="submit">Lägg till</button>
-			<button type="button" onclick={() => (displayAddForm = false)}>Avbryt</button>
-		</form>
+		<section id="add-quote-form" transition:slide={{ duration: 300 }}>
+			<h2>Lägg till citat</h2>
+			<p>Datum läggs till automatiskt</p>
+			<form onsubmit={handleSubmit}>
+				<input name="text" bind:value={text} placeholder="Vad sades" required />
+				<input name="author" bind:value={author} placeholder="Vem sade det" required />
+				<button type="submit">Lägg till</button>
+				<button type="button" onclick={() => (displayAddForm = false)}>Avbryt</button>
+			</form>
+		</section>
 	{:else}
 		<button onclick={() => (displayAddForm = !displayAddForm)}> Lägg till citat </button>
 	{/if}
@@ -65,7 +68,7 @@
 	<a href="/login">Logga in</a>
 {/if}
 
-<section>
+<section id="quotes">
 	{#if $user}
 		{#each quotes as q}
 			<QuoteComponent whoSaidIt={q.author} date={q.created_at} text={q.text} number={q.number} />
@@ -76,11 +79,28 @@
 </section>
 
 <style>
-	section {
+	#add-quote-form {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		margin-top: 2rem;
-		margin-bottom: 2rem;
+		gap: 0.5rem;
+	}
+
+	#add-quote-form form {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.5rem;
+	}
+
+	#quotes {
+		display: grid;
+		gap: 0.5rem;
+		grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+	}
+
+	form input {
+		grid-column: span 2;
+	}
+	button {
+		width: 100%;
 	}
 </style>

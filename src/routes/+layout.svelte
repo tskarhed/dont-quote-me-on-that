@@ -31,18 +31,19 @@
 	<link href="https://fonts.googleapis.com/css?family=Tenor+Sans&display=swap" rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
 </svelte:head>
-<header>
-	<h1>{PUBLIC_SITE_TITLE}</h1>
-</header>
-<main>
-	{@render children?.()}
-
+<div id="container">
+	<header>
+		<h1>{PUBLIC_SITE_TITLE}</h1>
+	</header>
+	<main>
+		{@render children?.()}
+	</main>
 	<footer>
 		{#if $user}
 			<button onclick={() => supabase.auth.signOut()}>Logga ut</button>
 		{/if}
 	</footer>
-</main>
+</div>
 
 <style>
 	:global(body) {
@@ -53,8 +54,19 @@
 		font-size: 1.2rem;
 	}
 
+	#container {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+	}
+
 	main {
 		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+
+		flex-grow: 1;
 	}
 
 	header {
@@ -67,5 +79,10 @@
 	header h1 {
 		color: #fff4e6;
 		margin: 0;
+	}
+
+	footer {
+		padding: 1rem;
+		text-align: center;
 	}
 </style>
