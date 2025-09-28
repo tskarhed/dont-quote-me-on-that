@@ -5,26 +5,23 @@
 	let password = '';
 	let error = '';
 
-	// Check if user is already logged in and display text that they are logged in
+	// Check if user is already logged in and redirect to home
 	supabase.auth.getUser().then(({ data }) => {
 		if (data.user) {
 			goto('/');
-		} else {
-			error = 'You are not logged in';
 		}
 	});
 
 	async function login() {
+		error = '';
+
 		const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-		if (err) error = err.message;
-
-		// Reroute to home page
-		goto('/');
-	}
-
-	async function signup() {
-		const { error: err } = await supabase.auth.signUp({ email, password });
-		if (err) error = err.message;
+		if (err) {
+			error = err.message;
+		} else {
+			// Reroute to home page on successful login
+			goto('/');
+		}
 	}
 </script>
 
@@ -34,11 +31,13 @@
 		<input bind:value={email} placeholder="Email" required />
 		<input type="password" bind:value={password} placeholder="Lösenord" required />
 		<button type="submit">Logga in</button>
-		<button type="button" onclick={signup}>Registrera</button>
 	</form>
 	{#if error}
 		<p class="error-details">{error}</p>
 	{/if}
+	<p class="signup-link">
+		Har du inget konto? <a href="/signup">Registrera dig här</a>
+	</p>
 </section>
 
 <style>
@@ -49,17 +48,15 @@
 	}
 
 	#login-form form {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
+		display: flex;
+		flex-direction: column;
 		gap: 0.5rem;
 	}
 
 	form input {
-		grid-column: span 2;
-	}
-
-	button {
-		width: 100%;
+		padding: 0.5rem;
+		border: 1px solid #ccc;
+		border-radius: 4px;
 	}
 
 	.error-details {
@@ -68,5 +65,20 @@
 		font-size: 0.9rem;
 		text-align: center;
 		margin: 0.5rem 0;
+	}
+
+	.signup-link {
+		text-align: center;
+		margin-top: 1rem;
+		font-size: 0.9rem;
+	}
+
+	.signup-link a {
+		color: #007bff;
+		text-decoration: none;
+	}
+
+	.signup-link a:hover {
+		text-decoration: underline;
 	}
 </style>
