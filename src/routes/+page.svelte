@@ -209,7 +209,7 @@
 	.error-details {
 		color: #d32f2f !important;
 		font-style: italic;
-		font-size: 0.9rem;
+		font-size: 1rem;
 	}
 
 	.loading {

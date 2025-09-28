@@ -135,7 +135,7 @@
 	.admin-link {
 		color: #fff4e6;
 		text-decoration: none;
-		font-size: 0.9rem;
+		font-size: 1rem;
 		padding: 0.5rem 1rem;
 		border: 1px solid #fff4e6;
 		border-radius: 4px;

@@ -83,7 +83,7 @@
 	.error-details {
 		color: #d32f2f !important;
 		font-style: italic;
-		font-size: 0.9rem;
+		font-size: 1rem;
 		text-align: center;
 		margin: 0.5rem 0;
 	}
@@ -91,7 +91,7 @@
 	.success-details {
 		color: #2e7d32 !important;
 		font-style: italic;
-		font-size: 0.9rem;
+		font-size: 1rem;
 		text-align: center;
 		margin: 0.5rem 0;
 	}
@@ -108,7 +108,7 @@
 		color: white;
 		text-decoration: none;
 		border-radius: 4px;
-		font-size: 0.9rem;
+		font-size: 1rem;
 	}
 
 	.main-page-button:hover {
@@ -118,7 +118,7 @@
 	.login-link {
 		text-align: center;
 		margin-top: 1rem;
-		font-size: 0.9rem;
+		font-size: 1rem;
 	}
 
 	.login-link a {
