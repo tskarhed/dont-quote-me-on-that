@@ -14,21 +14,61 @@
 	let userRole = $state<string>('');
 	let allowlistError = $state<string>('');
 	let isLoading = $state<boolean>(true);
+	let isLoadingMore = $state<boolean>(false);
+	let currentPage = $state<number>(1);
+	let pageSize = $state<number>(30);
+	let hasMore = $state<boolean>(true);
+	let initialLoadComplete = $state<boolean>(false);
 
-	async function loadQuotes() {
+	async function loadQuotes(reset = true, page?: number) {
 		if (!isAllowlisted && userRole !== 'admin') return;
+
+		const targetPage = page ?? currentPage;
+		console.log(
+			'loadQuotes called with reset:',
+			reset,
+			'page:',
+			page,
+			'targetPage:',
+			targetPage,
+			'currentPage:',
+			currentPage
+		);
+
+		if (reset) {
+			currentPage = 1;
+			quotes = [];
+		}
+
+		const offset = (targetPage - 1) * pageSize;
+		console.log('Calculated offset:', offset, 'for page:', targetPage);
 
 		const { data, error } = await supabase
 			.from('quotes')
 			.select('*')
-			.order('number', { ascending: false });
+			.order('number', { ascending: false })
+			.range(offset, offset + pageSize - 1);
 
 		if (error) {
 			allowlistError = error.message;
 			return;
 		}
 
-		quotes = data ?? [];
+		const newQuotes = data ?? [];
+
+		if (reset) {
+			quotes = newQuotes;
+		} else {
+			quotes = [...quotes, ...newQuotes];
+		}
+
+		// Check if there are more quotes to load
+		hasMore = newQuotes.length === pageSize;
+
+		// Mark initial load as complete
+		if (reset) {
+			initialLoadComplete = true;
+		}
 	}
 
 	async function checkAllowlistStatus() {
@@ -83,6 +123,25 @@
 		}
 	}
 
+	async function loadMoreQuotes(event?: Event) {
+		if (event) {
+			event.preventDefault();
+		}
+
+		if (!hasMore || isLoadingMore) return;
+
+		isLoadingMore = true;
+		const nextPage = currentPage + 1;
+		console.log('Loading more quotes, currentPage:', currentPage, 'nextPage:', nextPage);
+		currentPage = nextPage;
+
+		try {
+			await loadQuotes(false, nextPage);
+		} finally {
+			isLoadingMore = false;
+		}
+	}
+
 	async function addQuote() {
 		const u = get(user);
 		if (!u || (!isAllowlisted && userRole !== 'admin')) return;
@@ -118,11 +177,14 @@
 			userRole = '';
 			allowlistError = '';
 			isLoading = false;
+			currentPage = 1;
+			hasMore = true;
+			initialLoadComplete = false;
 		}
 	});
 
 	$effect(() => {
-		if ((isAllowlisted || userRole === 'admin') && !isLoading) {
+		if ((isAllowlisted || userRole === 'admin') && !isLoading && !initialLoadComplete) {
 			loadQuotes();
 		}
 	});
@@ -168,6 +230,23 @@
 		{#each quotes as q}
 			<QuoteComponent whoSaidIt={q.author} date={q.created_at} text={q.text} number={q.number} />
 		{/each}
+
+		{#if hasMore && quotes.length > 0}
+			<div class="load-more-container">
+				<button
+					type="button"
+					onclick={(e) => loadMoreQuotes(e)}
+					disabled={isLoadingMore}
+					class="load-more-btn"
+				>
+					{#if isLoadingMore}
+						Laddar...
+					{:else}
+						Ladda fler
+					{/if}
+				</button>
+			</div>
+		{/if}
 	{:else if $user && isLoading}
 		<div class="loading">
 			<p>Loading quotes...</p>
@@ -216,5 +295,32 @@
 		text-align: center;
 		padding: 2rem;
 		color: #666;
+	}
+
+	.load-more-container {
+		display: flex;
+		justify-content: center;
+		padding: 2rem;
+		grid-column: 1 / -1;
+	}
+
+	.load-more-btn {
+		padding: 0.75rem 2rem;
+		font-size: 1rem;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+
+	.load-more-btn:hover:not(:disabled) {
+		background-color: #0056b3;
+	}
+
+	.load-more-btn:disabled {
+		background-color: #6c757d;
+		cursor: not-allowed;
 	}
 </style>
