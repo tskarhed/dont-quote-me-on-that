@@ -110,7 +110,8 @@
 		flex-grow: 1;
 	}
 
-	header {
+	header,
+	footer {
 		background-color: #3c2f2f;
 		padding: 1rem 0;
 		font-family: 'Cormorant Garamond', serif;

@@ -16,7 +16,7 @@
 	let isLoading = $state<boolean>(true);
 	let isLoadingMore = $state<boolean>(false);
 	let currentPage = $state<number>(1);
-	let pageSize = $state<number>(30);
+	let pageSize = $state<number>(50);
 	let hasMore = $state<boolean>(true);
 	let initialLoadComplete = $state<boolean>(false);
 
@@ -24,16 +24,6 @@
 		if (!isAllowlisted && userRole !== 'admin') return;
 
 		const targetPage = page ?? currentPage;
-		console.log(
-			'loadQuotes called with reset:',
-			reset,
-			'page:',
-			page,
-			'targetPage:',
-			targetPage,
-			'currentPage:',
-			currentPage
-		);
 
 		if (reset) {
 			currentPage = 1;
@@ -41,7 +31,6 @@
 		}
 
 		const offset = (targetPage - 1) * pageSize;
-		console.log('Calculated offset:', offset, 'for page:', targetPage);
 
 		const { data, error } = await supabase
 			.from('quotes')
@@ -242,7 +231,7 @@
 					{#if isLoadingMore}
 						Laddar...
 					{:else}
-						Ladda fler
+						↻ Ladda fler
 					{/if}
 				</button>
 			</div>
@@ -302,21 +291,6 @@
 		justify-content: center;
 		padding: 2rem;
 		grid-column: 1 / -1;
-	}
-
-	.load-more-btn {
-		padding: 0.75rem 2rem;
-		font-size: 1rem;
-		background-color: #007bff;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: background-color 0.2s;
-	}
-
-	.load-more-btn:hover:not(:disabled) {
-		background-color: #0056b3;
 	}
 
 	.load-more-btn:disabled {
