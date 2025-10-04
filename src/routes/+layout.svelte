@@ -179,6 +179,12 @@
 		}
 	}
 
+	@media (min-width: 600px) {
+		main {
+			padding: 1rem 15%;
+		}
+	}
+
 	footer {
 		padding: 1rem;
 		text-align: center;
