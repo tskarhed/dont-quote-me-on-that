@@ -1,6 +1,7 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
 	import { PUBLIC_SITE_TITLE } from '$env/static/public';
+	import { dev } from '$app/environment';
 
 	import { supabase } from '$lib/supabaseClient';
 	import { onMount } from 'svelte';
@@ -18,6 +19,18 @@
 		supabase.auth.onAuthStateChange((_event, session) => {
 			user.set(session?.user ? session.user : null);
 		});
+
+		// Register service worker for PWA (only in production)
+		if (!dev && 'serviceWorker' in navigator) {
+			navigator.serviceWorker
+				.register('/service-worker.js')
+				.then((registration) => {
+					console.log('Service Worker registered:', registration);
+				})
+				.catch((error) => {
+					console.log('Service Worker registration failed:', error);
+				});
+		}
 	});
 
 	async function checkUserRole() {
@@ -66,6 +79,15 @@
 	/>
 	<link href="https://fonts.googleapis.com/css?family=Tenor+Sans&display=swap" rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
+
+	<link rel="icon" type="image/png" href="/images/icons/favicon-96x96.png" sizes="96x96" />
+	<link rel="icon" type="image/svg+xml" href="/images/icons/favicon.svg" />
+	<link rel="shortcut icon" href="/images/icons/favicon.ico" />
+	<link rel="apple-touch-icon" sizes="180x180" href="/images/icons/apple-touch-icon.png" />
+	<meta name="apple-mobile-web-app-title" content="Citat" />
+	<link rel="manifest" href="/manifest.json" />
+
+	<title>{PUBLIC_SITE_TITLE}</title>
 </svelte:head>
 <div id="container">
 	<header>

@@ -1,0 +1,25 @@
+{
+	"name": "Don't Quote Me On That",
+	"short_name": "Citat",
+	"description": "A quotes collection app",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#fff4e6",  
+	"theme_color": "#3c2f2f",
+	"orientation": "portrait-primary",
+	"icons": [
+		{
+			"src": "/images/icons/web-app-manifest-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose": "maskable"
+		},
+		{
+			"src": "/images/icons/web-app-manifest-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	]
+}
+
