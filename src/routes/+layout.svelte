@@ -179,11 +179,6 @@
 			padding: 0 0.5rem;
 		}
 
-		header h1 {
-			text-align: center;
-			font-size: 1.5rem;
-		}
-
 		.admin-link {
 			margin-left: 0;
 			font-size: 0.8rem;
@@ -192,10 +187,6 @@
 	}
 
 	@media (max-width: 480px) {
-		header h1 {
-			font-size: 1.3rem;
-		}
-
 		.admin-link {
 			font-size: 0.75rem;
 			padding: 0.3rem 0.6rem;

@@ -50,18 +50,18 @@
 			.from('allowlist')
 			.select('email, created_at')
 			.order('created_at', { ascending: false });
-		
+
 		if (err) {
 			error = err.message;
 			return;
 		}
-		
-		allowlist = data?.map(item => item.email) ?? [];
+
+		allowlist = data?.map((item) => item.email) ?? [];
 	}
 
 	async function addToAllowlist() {
 		if (!newEmail.trim()) return;
-		
+
 		const u = get(user);
 		if (!u) return;
 
@@ -81,10 +81,7 @@
 	}
 
 	async function removeFromAllowlist(email: string) {
-		const { error: err } = await supabase
-			.from('allowlist')
-			.delete()
-			.eq('email', email);
+		const { error: err } = await supabase.from('allowlist').delete().eq('email', email);
 
 		if (err) {
 			error = err.message;
@@ -137,14 +134,17 @@
 		<main class="admin-content">
 			<section class="allowlist-section">
 				<h2>Manage Allowlist</h2>
-				<p>Add or remove emails from the allowlist. Only allowlisted users can view and add quotes.</p>
-				
+				<p>
+					Add or remove emails from the allowlist. Only allowlisted users can view and add quotes.
+				</p>
+
 				<form onsubmit={handleSubmit} class="add-form">
-					<input 
-						bind:value={newEmail} 
-						placeholder="Email to add to allowlist" 
+					<input
+						bind:value={newEmail}
+						placeholder="Email to add to allowlist"
 						type="email"
-						required 
+						autocapitalize="off"
+						required
 					/>
 					<button type="submit">Add to Allowlist</button>
 				</form>
@@ -152,7 +152,7 @@
 				{#if error}
 					<div class="message error">{error}</div>
 				{/if}
-				
+
 				{#if success}
 					<div class="message success">{success}</div>
 				{/if}
@@ -166,10 +166,7 @@
 							{#each allowlist as email}
 								<div class="allowlist-item">
 									<span class="email">{email}</span>
-									<button 
-										onclick={() => removeFromAllowlist(email)}
-										class="remove-btn"
-									>
+									<button onclick={() => removeFromAllowlist(email)} class="remove-btn">
 										Remove
 									</button>
 								</div>
@@ -333,7 +330,7 @@
 	}
 
 	.allowlist-item:hover {
-		box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 
 	.email {
