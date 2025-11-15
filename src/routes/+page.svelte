@@ -75,7 +75,7 @@
 				.from('profiles')
 				.select('role')
 				.eq('id', u.id)
-				.single();
+				.maybeSingle();
 
 			if (profileError) {
 				console.error('Profile check error:', profileError);
@@ -92,6 +92,12 @@
 			}
 
 			// Check if user is in allowlist (only for non-admin users)
+			if (!u.email) {
+				isAllowlisted = false;
+				isLoading = false;
+				return;
+			}
+
 			const { data: allowlistData, error: allowlistError } = await supabase
 				.from('allowlist')
 				.select('email')
@@ -202,7 +208,7 @@
 	{:else}
 		<div class="access-denied">
 			<h2>Tillgång begränsad</h2>
-			<p>Din e-post ({$user.email}) har inte rättighet att se citat.</p>
+			<p>Din e-post ({$user?.email || 'okänd'}) har inte rättighet att se citat.</p>
 			<p>Kontakta en administratör för att begära tillgång.</p>
 			{#if allowlistError}
 				<p class="error-details">Fel: {allowlistError}</p>

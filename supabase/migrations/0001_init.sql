@@ -18,12 +18,12 @@ alter table profiles enable row level security;
 -- Policy: users can see their own profile
 create policy "users can see own profile"
 on profiles for select
-using (id = auth.uid());
+using (id = (select auth.uid()));
 
 -- Policy: users can update their own profile (optional)
 create policy "users can update own profile"
 on profiles for update
-using (id = auth.uid());
+using (id = (select auth.uid()));
 
 -- ------------------------------
 -- Allowlist
@@ -37,20 +37,49 @@ create table if not exists allowlist (
 
 alter table allowlist enable row level security;
 
--- Policy: only admins can manage allowlist
-create policy "admins can manage allowlist"
-on allowlist for all
+-- Index on foreign key for constraint performance (required for foreign key efficiency)
+create index if not exists allowlist_created_by_idx on allowlist(created_by);
+
+-- Policy: admins and users can select allowlist (admins can see all, users can check their own email)
+create policy "allowlist select policy"
+on allowlist for select
 using (
   exists (
     select 1 from profiles p
-    where p.id = auth.uid() and p.role = 'admin'
+    where p.id = (select auth.uid()) and p.role = 'admin'
+  ) or
+  email = (select auth.email())
+);
+
+-- Policy: only admins can insert into allowlist
+create policy "admins can insert allowlist"
+on allowlist for insert
+with check (
+  exists (
+    select 1 from profiles p
+    where p.id = (select auth.uid()) and p.role = 'admin'
   )
 );
 
--- Policy: users can check if their email is in allowlist
-create policy "users can check allowlist"
-on allowlist for select
-using (email = auth.email());
+-- Policy: only admins can update allowlist
+create policy "admins can update allowlist"
+on allowlist for update
+using (
+  exists (
+    select 1 from profiles p
+    where p.id = (select auth.uid()) and p.role = 'admin'
+  )
+);
+
+-- Policy: only admins can delete from allowlist
+create policy "admins can delete allowlist"
+on allowlist for delete
+using (
+  exists (
+    select 1 from profiles p
+    where p.id = (select auth.uid()) and p.role = 'admin'
+  )
+);
 
 -- ------------------------------
 -- Quotes
@@ -70,14 +99,14 @@ alter table quotes enable row level security;
 create policy "admins and allowlisted users can read quotes"
 on quotes for select
 using (
-  auth.uid() is not null and (
+  (select auth.uid()) is not null and (
     exists (
       select 1 from profiles p
-      where p.id = auth.uid() and p.role = 'admin'
+      where p.id = (select auth.uid()) and p.role = 'admin'
     ) or
     exists (
       select 1 from allowlist a
-      where a.email = auth.email()
+      where a.email = (select auth.email())
     )
   )
 );
@@ -86,14 +115,14 @@ using (
 create policy "admins and allowlisted users can add quotes"
 on quotes for insert
 with check (
-  auth.uid() = created_by and (
+  (select auth.uid()) = created_by and (
     exists (
       select 1 from profiles p
-      where p.id = auth.uid() and p.role = 'admin'
+      where p.id = (select auth.uid()) and p.role = 'admin'
     ) or
     exists (
       select 1 from allowlist a
-      where a.email = auth.email()
+      where a.email = (select auth.email())
     )
   )
 );
@@ -104,7 +133,7 @@ on quotes for delete
 using (
   exists (
     select 1 from profiles p
-    where p.id = auth.uid() and p.role = 'admin'
+    where p.id = (select auth.uid()) and p.role = 'admin'
   )
 );
 

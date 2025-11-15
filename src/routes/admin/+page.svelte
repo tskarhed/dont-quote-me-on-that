@@ -23,7 +23,7 @@
 				.from('profiles')
 				.select('role')
 				.eq('id', u.id)
-				.single();
+				.maybeSingle();
 
 			if (profileError) {
 				console.error('Profile check error:', profileError);
@@ -179,7 +179,7 @@
 			<section class="admin-info">
 				<h2>Admin Information</h2>
 				<div class="info-card">
-					<p><strong>Logged in as:</strong> {$user.email}</p>
+					<p><strong>Logged in as:</strong> {$user?.email || 'Unknown'}</p>
 					<p><strong>Role:</strong> {userRole}</p>
 					<p><strong>Total allowlisted users:</strong> {allowlist.length}</p>
 				</div>

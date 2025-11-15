@@ -45,7 +45,7 @@
 				.from('profiles')
 				.select('role')
 				.eq('id', u.id)
-				.single();
+				.maybeSingle();
 
 			if (profileError) {
 				console.error('Profile check error:', profileError);
